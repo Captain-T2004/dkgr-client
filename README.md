@@ -1,15 +1,15 @@
-# dkgr-client
+# dkgr_client
 
 ## Installation
 
 ```bash
-pip install dkgr-client
+pip install dkgr_client
 ```
 
 ## Usage
 
 ```python
-from dkgr-client import ValidationClient
+from dkgr_client import ValidationClient
 
 try:
     # Initialize the client
