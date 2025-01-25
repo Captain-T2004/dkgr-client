@@ -32,4 +32,7 @@ try:
 
     # Close the client
     client.close()
+
+except Exception as e:
+    print(e)
 ```
