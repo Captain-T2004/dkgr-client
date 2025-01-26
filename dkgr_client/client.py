@@ -1,21 +1,31 @@
 import http.client
+import ssl
 import uuid
 import json
 from typing import Dict, List, Optional
 
 class ValidationClient:
-    def __init__(self, 
-                 api_key: str, 
-                 base_url: str = "127.0.0.1:8000", 
-                 endpoint: str = "/validate"):
+    def __init__(self,
+                 api_key: str,
+                 base_url: str = "127.0.0.1:8000",
+                 endpoint: str = "/validate",
+                 use_https: bool = True):
 
         self.api_key = api_key
-        self.base_url = base_url
+        if("http://" in base_url or "https://" in base_url):
+            self.base_url = base_url.split("://")[1]
+        self.use_https = use_https or ("https://" in base_url)
         self.endpoint = endpoint
         self._connection = None
 
     def _create_connection(self):
-        self._connection = http.client.HTTPConnection(self.base_url)
+        host, port = self.base_url.split(':') if ':' in self.base_url else (self.base_url, '443' if self.use_https else '80')
+
+        if self.use_https:
+            context = ssl.create_default_context()
+            self._connection = http.client.HTTPSConnection(host, port=int(port), context=context)
+        else:
+            self._connection = http.client.HTTPConnection(host, port=int(port))
 
     def _generate_boundary(self) -> str:
         return f"----WebKitFormBoundary{uuid.uuid4().hex}"
@@ -100,21 +110,17 @@ class ValidationClient:
             "X-API-Key": self.api_key,
             "Content-Type": "application/json"
         }
-        
         try:
-            connection = http.client.HTTPConnection(self.base_url)
-            connection.request("GET", "/validators", headers=headers)
-            response = connection.getresponse()
+            self._connection.request("GET", "/validators", headers=headers)
+            response = self._connection.getresponse()
             response_data = json.loads(response.read().decode('utf-8'))
-            
+
             # Assuming backend returns a list of validator names
             return response_data.get('input_validators', []) if self.type=="input" else response_data.get('output_validators', [])
-        
+
         except Exception as e:
             print(f"Error retrieving validators: {e}")
             return []
-        finally:
-            connection.close()
 
     def _parse_validation_results(self, validation_output: str) -> Dict:
         validators = self._get_validators() or [
