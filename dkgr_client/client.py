@@ -9,7 +9,7 @@ class ValidationClient:
                  api_key: str,
                  base_url: str = "https://immune-louse-dynamic.ngrok-free.app",
                  endpoint: str = "/validate",
-                 use_https: bool = True):
+                 use_https: bool = False):
 
         self.api_key = api_key
         if("http://" in base_url or "https://" in base_url):
