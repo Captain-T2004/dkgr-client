@@ -15,7 +15,6 @@ try:
     # Initialize the client
     client = ValidationClient(
         api_key='your_api_key', 
-        base_url='https://api.example.com'
     )
     
     # Start a new event

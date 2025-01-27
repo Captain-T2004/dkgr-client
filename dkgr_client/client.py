@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 class ValidationClient:
     def __init__(self,
                  api_key: str,
-                 base_url: str = "127.0.0.1:8000",
+                 base_url: str = "https://immune-louse-dynamic.ngrok-free.app",
                  endpoint: str = "/validate",
                  use_https: bool = True):
 
